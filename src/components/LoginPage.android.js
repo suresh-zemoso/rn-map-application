@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableHighlight } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableHighlight, AsyncStorage } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import axios from 'axios';
+// import * as SecureStore from 'expo-secure-store';
 
 class LoginPage extends Component {
 
@@ -8,6 +10,31 @@ class LoginPage extends Component {
         username: '',
         password: ''
     };
+
+    submitForm = () => {
+
+        const data = {
+            username: this.state.username,
+            password: this.state.password
+        }
+        axios({
+            method: 'post',
+            url: 'http://192.168.43.129:3001/login',
+            data,
+            headers: { 'Content-Type': 'application/json' }
+        })
+            .then(data => {
+                console.log(data)
+                AsyncStorage.setItem(
+                    'access_token',
+                    data.access_token
+                );
+                this.props.navigation.navigate('BottomTabs');
+            },
+                error => {
+                    console.warn(error)
+                })
+    }
 
     render() {
         return (
@@ -26,7 +53,10 @@ class LoginPage extends Component {
                         onChangeText={(text) => { this.setState({ password: text }) }}
                         value={this.state.password}
                     />
-                    <TouchableHighlight style={styles.button}>
+                    <TouchableHighlight
+                        style={styles.button}
+                        onPress={this.submitForm}
+                    >
                         <Text style={styles.buttonText}>Sign In</Text>
                     </TouchableHighlight>
                 </View>
