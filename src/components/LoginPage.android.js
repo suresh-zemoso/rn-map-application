@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableHighlight, AsyncStorage } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableHighlight } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import axios from 'axios';
 // import * as SecureStore from 'expo-secure-store';
@@ -24,11 +25,12 @@ class LoginPage extends Component {
             headers: { 'Content-Type': 'application/json' }
         })
             .then(data => {
-                console.log(data)
+                // console.log('Response from Api', data)
                 AsyncStorage.setItem(
                     'access_token',
-                    data.access_token
+                    data.data.access_token
                 );
+                this.setState({ username: '', password: '' })
                 this.props.navigation.navigate('BottomTabs');
             },
                 error => {
